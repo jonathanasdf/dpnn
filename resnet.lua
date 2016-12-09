@@ -21,12 +21,12 @@ function BasicResidualModule:__init(nInputPlane, n, stride, dropout)
   local m = nInputPlane == n and self.block or self.module
   m:add(nn.SpatialBatchNormalization(nInputPlane)):add(nn.ReLU(true))
 
-  self.block:add(nn.SpatialConvolution(nInputPlane, n, 3, 3, stride, stride, 1, 1))
+  self.block:add(nn.SpatialConvolution(nInputPlane, n, 3, 3, stride, stride, 1, 1):noBias())
   self.block:add(nn.SpatialBatchNormalization(n)):add(nn.ReLU(true))
   if self.dropout ~= 0 then
     self.block:add(nn.Dropout(self.dropout))
   end
-  self.block:add(nn.SpatialConvolution(n, n, 3, 3, 1, 1, 1, 1))
+  self.block:add(nn.SpatialConvolution(n, n, 3, 3, 1, 1, 1, 1):noBias())
 
   self.shortcut = shortcut(nInputPlane, n, stride)
 
@@ -55,14 +55,14 @@ function BottleneckResidualModule:__init(nInputPlane, nSqueeze, nExpand, stride,
   local m = nInputPlane == nExpand and self.block or self.module
   m:add(nn.SpatialBatchNormalization(nInputPlane)):add(nn.ReLU(true))
 
-  self.block:add(nn.SpatialConvolution(nInputPlane, nSqueeze, 1, 1, 1, 1))
+  self.block:add(nn.SpatialConvolution(nInputPlane, nSqueeze, 1, 1, 1, 1):noBias())
   self.block:add(nn.SpatialBatchNormalization(nSqueeze)):add(nn.ReLU(true))
   if self.dropout ~= 0 then
     self.block:add(nn.Dropout(self.dropout))
   end
-  self.block:add(nn.SpatialConvolution(nSqueeze, nSqueeze, 3, 3, stride, stride, 1, 1))
+  self.block:add(nn.SpatialConvolution(nSqueeze, nSqueeze, 3, 3, stride, stride, 1, 1):noBias())
   self.block:add(nn.SpatialBatchNormalization(nSqueeze)):add(nn.ReLU(true))
-  self.block:add(nn.SpatialConvolution(nSqueeze, nExpand, 1, 1, 1, 1))
+  self.block:add(nn.SpatialConvolution(nSqueeze, nExpand, 1, 1, 1, 1):noBias())
 
   self.shortcut = shortcut(nInputPlane, nExpand, stride)
 
